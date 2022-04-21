@@ -21,7 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+// 외부정의 변수로 선언
+TIM_HandleTypeDef htim2;
+//extern TIM_OC_InitTypeDef TIM_OCInit;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,7 +41,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- TIM_HandleTypeDef htim2;
+// TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart2;
 
@@ -308,21 +310,30 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	TIM_OC_InitTypeDef TIM_OCInit = {0};
 	if (GPIO_Pin == SW1_Pin) {
+		TIM_OCInit.Pulse = 999;
+		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);
 //		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000 - 1);
-		TIM2->CCR1 = 1000 - 1;
+//		TIM2->CCR1 = 1000 - 1;
 	}
 	if (GPIO_Pin == SW2_Pin) {
+		TIM_OCInit.Pulse = 2999;
+		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);
 //		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 2000 - 1);
-		TIM2->CCR1 = 2000 - 1;
+//		TIM2->CCR1 = 2000 - 1;
 	}
 	if (GPIO_Pin == SW3_Pin) {
+		TIM_OCInit.Pulse = 4999;
+		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);
 //		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 5000 - 1);
-		TIM2->CCR1 = 5000 - 1;
+//		TIM2->CCR1 = 5000 - 1;
 	}
 	if (GPIO_Pin == SW4_Pin) {
+		TIM_OCInit.Pulse = 9999;
+		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);
 //		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 10000 - 1);
-		TIM2->CCR1 = 10000 - 1;
+//		TIM2->CCR1 = 10000 - 1;
 	}
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {

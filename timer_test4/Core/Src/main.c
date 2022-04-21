@@ -44,7 +44,7 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-//TimHandler, TIM_OCInit ë³€ìˆ˜ë¥¼ ì™¸ë¶€ì •ì˜ ë³€ìˆ˜ë¡œ ì„ ì–¸
+//TimHandler, TIM_OCInit ï¿???ï¿½ï¿½ï¿?? ?ï¿½ï¿½ï¿???ï¿½ï¿½?ï¿½ï¿½ ï¿???ï¿½ï¿½ï¿?? ?ï¿½ï¿½?ï¿½ï¿½
 extern TIM_HandleTypeDef TimHandle;
 extern TIM_OC_InitTypeDef TIM_OCInit;
 /* USER CODE END PV */
@@ -204,7 +204,16 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM2_Init 2 */
-
+  //???´ë¨¸ì? ?¸?„°?Ÿ½?Š¸ ?‹œ?ž‘. ì½œë°±?•¨?ˆ˜ ?‹¤?–‰?•  ?ˆ˜ ?žˆ?Œ
+	if (HAL_TIM_Base_Start_IT(&htim2) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_2) != HAL_OK) {
+		Error_Handler();
+	}
   /* USER CODE END TIM2_Init 2 */
 
 }
@@ -312,28 +321,49 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	TIM_OC_InitTypeDef TIM_OCInit;
 	if (GPIO_Pin == SW1_Pin) {
-		TIM_OCInit.Pulse = 9999;
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_1);
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM_OCInit.Pulse = 9999;
+//		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);
+//		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM2->CCR1 = 9999;
+//		TIM2->CCR2 = 9999;
+
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 9999);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 9999);
 	}
 	if (GPIO_Pin == SW2_Pin) {
-		TIM_OCInit.Pulse = 2500;
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_1);
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM_OCInit.Pulse = 2500;
+//		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_1);.
+//		TIM2->CCR1 = 2500;
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 2500);
 	}
 	if (GPIO_Pin == SW3_Pin) {
-		TIM_OCInit.Pulse = 5000;
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_1);
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM_OCInit.Pulse = 5000;
+//		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM2->CCR2 = 5000;
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 5000);
 	}
 	if (GPIO_Pin == SW4_Pin) {
-		TIM_OCInit.Pulse = 1200;
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_1);
-		HAL_TIM_OC_ConfigChannel(&TimHandle, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM_OCInit.Pulse = 1200;
+//		HAL_TIM_OC_ConfigChannel(&htim2, &TIM_OCInit, TIM_CHANNEL_2);
+//		TIM2->CCR2 = 9999;
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 9999);
 	}
 
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	GPIOC->BSRR = 0X03;
+	GPIOC->BSRR = 0XC0;
+}
 
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
+	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1){
+		GPIOC->BRR = 0X03;
+	}
+	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){
+		GPIOC->BRR = 0XC0;
+	}
 }
 /* USER CODE END 4 */
 
