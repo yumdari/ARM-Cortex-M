@@ -117,6 +117,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);
   lcd_init();
   lcd_send_string("clock");
+  HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1); // start Compare Interrupt every 0.5 secs
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -224,7 +225,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 6400;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 10000-1;
+  htim2.Init.Period = 1000-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -247,7 +248,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 5000-1;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -331,24 +332,43 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+//
+//	second += 1;
+//
+//	if(second == 60){
+//		minuet += 1;
+//		second = 0;
+//	}
+//	if(minuet == 60){
+//		hour += 1;
+//		minuet = 0;
+//	}
+//	if(minuet == 13){
+//		hour = 1;
+//	}
+//	sprintf(time_str, "%2d:%02d:%02d", hour, minuet, second);
+//	lcd_put_cur(1,0);
+//	lcd_send_string(time_str);
+//}
 
-	second += 1;
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim){
+		second += 1;
 
-	if(second == 60){
-		minuet += 1;
-		second = 0;
-	}
-	if(minuet == 60){
-		hour += 1;
-		minuet = 0;
-	}
-	if(minuet == 24){
-		hour = 0;
-	}
-	sprintf(time_str, "%d : %d : %d  ", hour, minuet, second);
-	lcd_put_cur(1,0);
-	lcd_send_string(time_str);
+		if(second == 60){
+			minuet += 1;
+			second = 0;
+		}
+		if(minuet == 60){
+			hour += 1;
+			minuet = 0;
+		}
+		if(minuet == 13){
+			hour = 1;
+		}
+		sprintf(time_str, "%2d:%02d:%02d", hour, minuet, second);
+		lcd_put_cur(1,0);
+		lcd_send_string(time_str);
 }
 /* USER CODE END 4 */
 
